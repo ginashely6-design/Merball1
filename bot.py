@@ -5,7 +5,7 @@ import threading
 import time
 from datetime import datetime, timedelta
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, CallbackContext, MessageHandler, filters, CallbackQueryHandler
 import asyncio
 
 # Database setup
@@ -236,32 +236,6 @@ _{quote}_
 Make today count! 🚀"""
     
     await update.message.reply_text(message, parse_mode='Markdown')
-
-# Background reminder checker
-def check_reminders():
-    while True:
-        try:
-            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            conn = sqlite3.connect('tasks.db')
-            c = conn.cursor()
-            
-            # Get reminders due in the next minute
-            time_until = (datetime.now() + timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S')
-            c.execute("SELECT * FROM reminders WHERE reminder_time BETWEEN ? AND ?",
-                      (now, time_until))
-            reminders = c.fetchall()
-            
-            for reminder in reminders:
-                # Send reminder
-                # This would require the application instance
-                # We'll implement this differently
-                pass
-            
-            conn.close()
-            time.sleep(60)
-        except Exception as e:
-            print(f"Reminder check error: {e}")
-            time.sleep(60)
 
 # Callback query handler
 async def button_callback(update: Update, context: CallbackContext):
